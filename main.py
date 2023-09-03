@@ -26,7 +26,7 @@ class Window:
         self.entry_frame_label = Label(self.entry_frame, text='Contacts', font=('norwester', 30), bg='gray')
         self.entry_frame_label.place(x=65, y=5)
 
-        self.man_icon = ImageTk.PhotoImage(file='assets/man.png')
+        self.man_icon = ImageTk.PhotoImage(file='assets/light_man.png')
         self.man_icon_label = Label(self.entry_frame, image=self.man_icon, bg='gray')
         self.man_icon_label.place(x=25, y=110)
 
