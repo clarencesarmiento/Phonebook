@@ -108,6 +108,10 @@ class EntryFrame(ctk.CTkFrame):
         else:
             CTkMessagebox(title='Warning', message='All fields are Required.', icon='warning', sound=True)
 
+    def update_contact(self):
+        user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
+        pass
+
     def delete_contact(self):
         user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
         response = CTkMessagebox(title='Confirm Delete', message='Are you sure to delete this contact?', icon='question',
