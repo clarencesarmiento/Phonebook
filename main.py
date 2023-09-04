@@ -13,10 +13,11 @@ appWidth, appHeight = 600, 300
 
 
 class EntryFrame(ctk.CTkFrame):
-    def __init__(self, master, conn, **kwargs):
+    def __init__(self, master, conn, data_frame, **kwargs):
         super().__init__(master, **kwargs)
         self.conn = conn
         self.cursor = self.conn.cursor()
+        self.data_frame = data_frame
 
         # Define StringVars
         self.user_firstname = StringVar()
@@ -69,7 +70,7 @@ class EntryFrame(ctk.CTkFrame):
         self.update_button = ctk.CTkButton(self, text='Update', cursor='hand2', width=80)
         self.update_button.grid(row=5, column=0, columnspan=2, padx=10, pady=(15, 10))
 
-        self.delete_button = ctk.CTkButton(self, text='Delete', cursor='hand2', width=80)
+        self.delete_button = ctk.CTkButton(self, text='Delete', cursor='hand2', command=self.delete_contact, width=80)
         self.delete_button.grid(row=5, column=1, padx=10, pady=(15, 10), sticky='e')
 
     def get_entry_data(self):
@@ -89,13 +90,14 @@ class EntryFrame(ctk.CTkFrame):
                 for row in self.cursor.fetchall():
                     first_name, last_name, phone_number = row[0], row[1], row[2]
                     if user_firstname == first_name and user_lastname == last_name and user_phonenumber == phone_number:
-                        break
+                        CTkMessagebox(title='Contact Record', message='Contact already in Record.')
                 else:
                     query = ("INSERT INTO contacts"
                              "(FirstName, LastName, PhoneNumber)"
                              "VALUES (?, ?, ?)")
                     datacontact = (user_firstname, user_lastname, user_phonenumber)
                     self.cursor.execute(query, datacontact)
+                    self.data_frame.clear()
                     self.conn.commit()
                     CTkMessagebox(title='Add Contact', message='Contact Added Successfully.', icon='check',
                                   option_1='Thanks')
@@ -106,6 +108,20 @@ class EntryFrame(ctk.CTkFrame):
         else:
             CTkMessagebox(title='Warning', message='All fields are Required.', icon='warning', sound=True)
 
+    def delete_contact(self):
+        user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
+        response = CTkMessagebox(title='Confirm Delete', message='Are you sure to delete this contact?', icon='question',
+                      option_1="No", option_2="Yes")
+        if response.get() == 'Yes':
+            query = 'DELETE FROM contacts WHERE FirstName = ? AND LastName = ? AND PhoneNumber = ?'
+            datacontact = (user_firstname, user_lastname, user_phonenumber)
+            self.cursor.execute(query, datacontact)
+            self.data_frame.clear()
+            self.conn.commit()
+        else:
+            pass
+
+
 
 class DataFrame(ctk.CTkFrame):
     def __init__(self, master, conn, entry_frame, **kwargs):
@@ -115,21 +131,23 @@ class DataFrame(ctk.CTkFrame):
         self.entry_frame = entry_frame
 
         # # Define StringVar
-        # self.to_search = StringVar()
+        self.to_search = StringVar()
+        self.to_search.trace('w', self.search)
 
         # Frame Title
         self.dataframe_title = ctk.CTkLabel(self, text='RECORD', font=('helvetica', 25, 'bold'), text_color='white')
         self.dataframe_title.grid(row=0, column=0, padx=10, pady=(15, 0), columnspan=3, sticky='ew')
 
+        # Label
+        self.search_label = ctk.CTkLabel(self, text='Search:', font=('helvetica', 15), text_color='white')
+        self.search_label.grid(row=1, column=0, padx=(10, 0), pady=(10, 0), sticky='w')
+
         # Frame Entries
-        self.to_search = ctk.CTkEntry(self, placeholder_text='Search')
-        self.to_search.grid(row=1, column=0, padx=(10, 0), pady=(10, 0), sticky='ew')
+        self.to_search_entry = ctk.CTkEntry(self, placeholder_text='Search', textvariable=self.to_search, width=190)
+        self.to_search_entry.grid(row=1, column=0, columnspan=2, padx=(10, 0), pady=(10, 0), sticky='e')
 
-        # Buttons
-        self.search_button = ctk.CTkButton(self, text='Search', cursor='hand2', command=self.search, width=60)
-        self.search_button.grid(row=1, column=1, padx=(10, 0), pady=(10, 0), sticky='ew')
-
-        self.clear_button = ctk.CTkButton(self, text='Clear', cursor='hand2', command=self.clear, width=40)
+        # Button
+        self.clear_button = ctk.CTkButton(self, text='Clear', cursor='hand2', command=self.clear)
         self.clear_button.grid(row=1, column=2, padx=10, pady=(10, 0), sticky='ew')
 
         self.style = ttk.Style()
@@ -162,15 +180,18 @@ class DataFrame(ctk.CTkFrame):
             firstname, lastname, phonenumber = item[0], item[1], item[2]
             self.db_view.insert('', 'end', values=(firstname, lastname, phonenumber))
 
-    def search(self):
+    def search(self, *args):
         to_search = self.to_search.get()
-        query = "SELECT FirstName, LastName, PhoneNumber FROM contacts WHERE FirstName Like '%"+to_search+"%' OR LastName LIKE '%"+to_search+"%' OR PhoneNumber LIKE '%"+to_search+"%'"
-        self.cursor.execute(query)
-        rows = self.cursor.fetchall()
-        self.update_dataframe(rows)
+        if to_search != '':
+            query = "SELECT FirstName, LastName, PhoneNumber FROM contacts WHERE FirstName Like '%" + to_search + "%' OR LastName LIKE '%" + to_search + "%' OR PhoneNumber LIKE '%" + to_search + "%'"
+            self.cursor.execute(query)
+            rows = self.cursor.fetchall()
+            self.update_dataframe(rows)
+        else:
+            self.clear()
 
     def clear(self):
-        self.to_search.delete(0, 'end')
+        self.to_search_entry.delete(0, 'end')
         query = 'SELECT FirstName, LastName, PhoneNumber FROM contacts'
         self.cursor.execute(query)
         rows = self.cursor.fetchall()
@@ -208,7 +229,7 @@ class App(ctk.CTk):
         self.configure(fg_color='#040D12')
         self.columnconfigure(0, weight=1)
 
-        self.entry_frame = EntryFrame(master=self, conn=self.conn, fg_color='#183D3D',
+        self.entry_frame = EntryFrame(master=self, conn=self.conn, data_frame=None, fg_color='#183D3D',
                                       border_color='#AEC3AE', border_width=2,
                                       width=300, height=300)
 
@@ -221,6 +242,8 @@ class App(ctk.CTk):
         self.data_frame.grid(row=0, column=1, padx=(0, 10), pady=10, sticky='nsew')
         self.data_frame.columnconfigure(0, weight=1)
         self.data_frame.rowconfigure(2, weight=1)
+
+        self.entry_frame.data_frame = self.data_frame
 
 
 def main():
