@@ -29,6 +29,10 @@ class EntryFrame(ctk.CTkFrame):
                                              text_color='white')
         self.entryframe_title.grid(row=0, column=0, padx=10, pady=(15, 0), columnspan=2, sticky='nsew')
 
+        # Creator
+        self.creator_label = ctk.CTkLabel(self, text='2023 C.Sarmiento', font=('helvetica', 10))
+        self.creator_label.grid(row=6, column=0, padx=10, pady=(5, 2), sticky='sw')
+
         # Frame Icon
         self.man_icon = ctk.CTkImage(Image.open('assets/dark_man.png'), size=(64, 64))
         self.man_icon_label = ctk.CTkLabel(self, image=self.man_icon, text='', anchor='center')
@@ -54,27 +58,23 @@ class EntryFrame(ctk.CTkFrame):
         self.lastname_entry = ctk.CTkEntry(self, placeholder_text='Enter Last Name', textvariable=self.user_lastname)
         self.lastname_entry.grid(row=3, column=1, padx=10, pady=(10, 0), sticky='ew')
 
-        self.phonenumber_entry = ctk.CTkEntry(self, placeholder_text='Enter Phone Number', textvariable=self.user_phonenumber)
+        self.phonenumber_entry = ctk.CTkEntry(self, placeholder_text='Enter Phone Number',
+                                              textvariable=self.user_phonenumber)
         self.phonenumber_entry.grid(row=4, column=1, padx=10, pady=(10, 0), sticky='ew')
 
         # Frame Buttons
-        self.info_button = ctk.CTkButton(self, text='i', font=('times new roman', 15, 'bold'), width=2,
-                                         corner_radius=15, fg_color='transparent', border_color='#AEC3AE',
-                                         border_width=1, anchor='e')
-        self.info_button.grid(row=0, column=1, padx=5, pady=5, sticky='ne')
-
         self.add_button = ctk.CTkButton(self, text='Add', cursor='hand2', command=self.add_contact, width=80)
-        self.add_button.grid(row=5, column=0, padx=10, pady=(15, 10), sticky='w')
+        self.add_button.grid(row=5, column=0, padx=10, pady=(15, 0), sticky='w')
         self.add_button.bind('<Return>', self.add_contact)
 
-        self.update_button = ctk.CTkButton(self, text='Update', cursor='hand2', width=80)
-        self.update_button.grid(row=5, column=0, columnspan=2, padx=10, pady=(15, 10))
+        self.update_button = ctk.CTkButton(self, text='Update', cursor='hand2', command=self.update_contact, width=80)
+        self.update_button.grid(row=5, column=0, columnspan=2, padx=10, pady=(15, 0))
 
         self.delete_button = ctk.CTkButton(self, text='Delete', cursor='hand2', command=self.delete_contact, width=80)
-        self.delete_button.grid(row=5, column=1, padx=10, pady=(15, 10), sticky='e')
+        self.delete_button.grid(row=5, column=1, padx=10, pady=(15, 0), sticky='e')
 
     def get_entry_data(self):
-        return self.user_firstname.get().strip().title(), self.user_lastname.get().strip().title(), self.user_phonenumber.get().strip().title()
+        return self.user_firstname.get().strip().title(), self.user_lastname.get().strip().title(), self.user_phonenumber.get().lstrip('0')
 
     def clear_entrybox(self):
         self.firstname_entry.delete(0, 'end')
@@ -86,21 +86,22 @@ class EntryFrame(ctk.CTkFrame):
         user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
         if user_firstname and user_lastname and user_phonenumber != '':
             if re.search(phone_number_format, user_phonenumber):
-                self.cursor.execute('SELECT * FROM contacts')
-                for row in self.cursor.fetchall():
-                    first_name, last_name, phone_number = row[0], row[1], row[2]
-                    if user_firstname == first_name and user_lastname == last_name and user_phonenumber == phone_number:
-                        CTkMessagebox(title='Contact Record', message='Contact already in Record.')
-                else:
-                    query = ("INSERT INTO contacts"
-                             "(FirstName, LastName, PhoneNumber)"
-                             "VALUES (?, ?, ?)")
+                # Check if the data already exists in the database
+                query = 'SELECT * FROM contacts WHERE PhoneNumber = ?'
+                self.cursor.execute(query, user_phonenumber)
+                existing_contact = self.cursor.fetchone()
+
+                if existing_contact is None:
+                    # Data doesn't exist, so add it to the database
+                    query = "INSERT INTO contacts (FirstName, LastName, PhoneNumber) VALUES (?, ?, ?)"
                     datacontact = (user_firstname, user_lastname, user_phonenumber)
                     self.cursor.execute(query, datacontact)
                     self.data_frame.clear()
                     self.conn.commit()
                     CTkMessagebox(title='Add Contact', message='Contact Added Successfully.', icon='check',
                                   option_1='Thanks')
+                else:
+                    CTkMessagebox(title='Contact Record', message='Phone number already in Record.')
                 self.clear_entrybox()
             else:
                 CTkMessagebox(title='Error', message='Wrong Phone number format.', icon='cancel', sound=True)
@@ -110,21 +111,32 @@ class EntryFrame(ctk.CTkFrame):
 
     def update_contact(self):
         user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
-        pass
+        response = CTkMessagebox(title='Confirm Update', message='Are you sure to update this contact?',
+                                 icon='question', option_1="No", option_2="Yes")
+        if response.get() == 'Yes':
+            query = 'UPDATE contacts SET FirstName = ?, LastName = ? WHERE PhoneNumber = ?'
+            datacontact = (user_firstname, user_lastname, user_phonenumber)
+            self.cursor.execute(query, datacontact)
+            self.conn.commit()
+            self.data_frame.clear()
+            self.clear_entrybox()
+        else:
+            pass
 
     def delete_contact(self):
         user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
-        response = CTkMessagebox(title='Confirm Delete', message='Are you sure to delete this contact?', icon='question',
-                      option_1="No", option_2="Yes")
+        response = CTkMessagebox(title='Confirm Delete', message='Are you sure to delete this contact?',
+                                 icon='question',
+                                 option_1="No", option_2="Yes")
         if response.get() == 'Yes':
             query = 'DELETE FROM contacts WHERE FirstName = ? AND LastName = ? AND PhoneNumber = ?'
             datacontact = (user_firstname, user_lastname, user_phonenumber)
             self.cursor.execute(query, datacontact)
-            self.data_frame.clear()
             self.conn.commit()
+            self.data_frame.clear()
+            self.clear_entrybox()
         else:
             pass
-
 
 
 class DataFrame(ctk.CTkFrame):
@@ -154,18 +166,29 @@ class DataFrame(ctk.CTkFrame):
         self.clear_button = ctk.CTkButton(self, text='Clear', cursor='hand2', command=self.clear)
         self.clear_button.grid(row=1, column=2, padx=10, pady=(10, 0), sticky='ew')
 
+        # Configure Treeview Style
         self.style = ttk.Style()
-        self.style.configure("mystyle.Treeview.Heading", font=('helvetica', 15, 'bold'))
-        self.style.configure("mystyle.Treeview", highlightthickness=0, bd=0, font=('Calibri', 15))
-        self.db_view = ttk.Treeview(self, columns=("firstname", "lastname", "phonenumber"), show='headings',
-                                    style='mystyle.Treeview')
+        self.style.theme_use('clam')
+        self.style.configure("Treeview.Heading", font=('helvetica', 15, 'bold'))
+        self.style.configure("Treeview", rowheight=30, font=('Calibri', 15))
+
+        # Create Treeview
+        self.db_view = ttk.Treeview(self, columns=("firstname", "lastname", "phonenumber"), show='headings', height=9)
+
+        # Place Scrollbar
+        self.scrollbar = ctk.CTkScrollbar(self, orientation='vertical')
+        self.scrollbar.grid(row=2, column=3, padx=(0, 5), pady=10, sticky='ns')
+
+        self.db_view.configure(yscrollcommand=self.scrollbar.set)
+        self.scrollbar.configure(command=self.db_view.yview)
 
         # Create Headings
         self.db_view.heading("firstname", text="First Name", anchor='w')
         self.db_view.heading("lastname", text="Last Name", anchor='w')
         self.db_view.heading("phonenumber", text="Phone Number", anchor='w')
-        self.db_view.grid(row=2, column=0, padx=15, pady=15, columnspan=3, sticky='nsew')
+        self.db_view.grid(row=2, column=0, padx=(15,0), pady=15, columnspan=3, sticky='nsew')
 
+        # Bind Double Left Click
         self.db_view.bind('<Double 1>', self.getrow)
 
         self.cursor.execute('SELECT * FROM contacts')
@@ -200,14 +223,6 @@ class DataFrame(ctk.CTkFrame):
         self.cursor.execute(query)
         rows = self.cursor.fetchall()
         self.update_dataframe(rows)
-
-    # def insert_data(self, firstname, lastname, phonenumber):
-    #     record = (firstname, lastname, phonenumber)
-    #     if record in self.data:
-    #         print('Already in Record.')
-    #     else:
-    #         self.db_view.insert(parent='', index=0, values=record)
-    #         # self.data.append(record)
 
 
 class App(ctk.CTk):
