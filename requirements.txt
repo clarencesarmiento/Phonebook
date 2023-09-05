@@ -1,2 +1,4 @@
-mysql-connector-python==8.1.0
-pillow==10.0.0
+customtkinter
+CTkMessagebox
+pyodbc
+pillow
