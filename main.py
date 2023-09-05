@@ -12,7 +12,6 @@ ctk.set_default_color_theme('green')
 
 
 appWidth, appHeight = 600, 300
-current_directory = os.getcwd()
 
 
 class EntryFrame(ctk.CTkFrame):
