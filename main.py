@@ -10,6 +10,7 @@ import os
 ctk.set_appearance_mode('dark')
 ctk.set_default_color_theme('green')
 
+
 appWidth, appHeight = 600, 300
 current_directory = os.getcwd()
 
@@ -50,7 +51,7 @@ class EntryFrame(ctk.CTkFrame):
         self.lastname_label.grid(row=3, column=0, padx=10, pady=(10, 0), sticky='ew')
 
         self.phone_number_label = ctk.CTkLabel(self, text='Phone Number', font=('helvetica', 15), text_color='white',
-                                               anchor='w')
+                                               anchor='center')
         self.phone_number_label.grid(row=4, column=0, padx=10, pady=(10, 0), sticky='ew')
 
         # Frame Entries
@@ -61,7 +62,7 @@ class EntryFrame(ctk.CTkFrame):
         self.lastname_entry.grid(row=3, column=1, padx=10, pady=(10, 0), sticky='ew')
 
         self.phonenumber_entry = ctk.CTkEntry(self, placeholder_text='Enter Phone Number',
-                                              textvariable=self.user_phonenumber)
+                                              textvariable=self.user_phonenumber,)
         self.phonenumber_entry.grid(row=4, column=1, padx=10, pady=(10, 0), sticky='ew')
 
         # Frame Buttons
@@ -274,9 +275,11 @@ class App(ctk.CTk):
         self.iconbitmap('assets/telephone-directory.ico')
         # self.geometry(f"{appWidth}x{appHeight}")
         self.minsize(appWidth, appHeight)
-        self.resizable(False, False)
+        # self.resizable(False, False)
         self.configure(fg_color='#040D12')
         self.columnconfigure(0, weight=1)
+        self.columnconfigure(1, weight=1)
+        self.rowconfigure(0, weight=1)
 
         self.entry_frame = EntryFrame(master=self, conn=self.conn, data_frame=None, fg_color='#183D3D',
                                       border_color='#AEC3AE', border_width=2,
@@ -284,12 +287,14 @@ class App(ctk.CTk):
 
         self.entry_frame.grid(row=0, column=0, padx=10, pady=10, sticky='nsew')
         self.entry_frame.columnconfigure(0, weight=1)
+        self.entry_frame.columnconfigure(1, weight=1)
 
         self.data_frame = DataFrame(master=self, conn=self.conn, entry_frame=self.entry_frame, fg_color='#5C8374',
                                     border_color='white',
                                     border_width=2, width=300, height=300)
         self.data_frame.grid(row=0, column=1, padx=(0, 10), pady=10, sticky='nsew')
         self.data_frame.columnconfigure(0, weight=1)
+        self.data_frame.columnconfigure(1, weight=1)
         self.data_frame.rowconfigure(2, weight=1)
 
         self.entry_frame.data_frame = self.data_frame
