@@ -5,11 +5,13 @@ from tkinter import ttk
 from PIL import Image
 import pyodbc
 import re
+import os
 
 ctk.set_appearance_mode('dark')
 ctk.set_default_color_theme('green')
 
 appWidth, appHeight = 600, 300
+current_directory = os.getcwd()
 
 
 class EntryFrame(ctk.CTkFrame):
@@ -74,7 +76,8 @@ class EntryFrame(ctk.CTkFrame):
         self.delete_button.grid(row=5, column=1, padx=10, pady=(15, 0), sticky='e')
 
     def get_entry_data(self):
-        return self.user_firstname.get().strip().title(), self.user_lastname.get().strip().title(), self.user_phonenumber.get().lstrip('0')
+        return self.user_firstname.get().strip().title(), self.user_lastname.get().strip().title(), self.user_phonenumber.get().lstrip(
+            '0')
 
     def clear_entrybox(self):
         self.firstname_entry.delete(0, 'end')
@@ -186,7 +189,7 @@ class DataFrame(ctk.CTkFrame):
         self.db_view.heading("firstname", text="First Name", anchor='w')
         self.db_view.heading("lastname", text="Last Name", anchor='w')
         self.db_view.heading("phonenumber", text="Phone Number", anchor='w')
-        self.db_view.grid(row=2, column=0, padx=(15,0), pady=15, columnspan=3, sticky='nsew')
+        self.db_view.grid(row=2, column=0, padx=(15, 0), pady=15, columnspan=3, sticky='nsew')
 
         # Bind Double Left Click
         self.db_view.bind('<Double 1>', self.getrow)
@@ -228,16 +231,43 @@ class DataFrame(ctk.CTkFrame):
 class App(ctk.CTk):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
+        current_directory = os.getcwd()
+        db_file_path = f'{current_directory}\\Phonebook.accdb'
+
         config = (
             r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};'
-            r'DBQ=C:\Users\acer\PycharmProjects\Phonebook\phonebook.accdb'
+            f'DBQ={db_file_path}'
         )
         self.conn = pyodbc.connect(config)
 
-        # self.cursor = database.cursor()
-        # Check Database connection
-        # for table_info in self.cursor.tables(tableType='TABLE'):
-        #     print(table_info.table_name)
+        # Create a cursor to execute SQL commands
+        self.cursor = self.conn.cursor()
+
+        table_exists = False
+
+        try:
+            # Attempt to fetch data from the 'Contacts' table
+            self.cursor.execute("SELECT TOP 1 * FROM Contacts")
+            self.cursor.fetchone()
+            table_exists = True
+        except pyodbc.Error as e:
+            # Handle the exception (e.g., print a message)
+            print(f"Table 'Contacts' does not exist or cannot be accessed: {e}")
+
+        if not table_exists:
+            # Create the 'Contacts' table if it doesn't exist
+            create_table_sql = """
+            CREATE TABLE Contacts (
+                FirstName TEXT NOT NULL,
+                LastName TEXT NOT NULL,
+                PhoneNumber TEXT NOT NULL
+            )
+            """
+            self.cursor.execute(create_table_sql)
+            self.conn.commit()
+            print("Table 'Contacts' created.")
+        else:
+            print("Table 'Contacts' already exists.")
 
         # Create Window
         self.title('Phonebook')
@@ -268,6 +298,8 @@ class App(ctk.CTk):
 def main():
     app = App()
     app.mainloop()
+    app.conn.close()
+    app.cursor.close()
 
 
 if __name__ == '__main__':
