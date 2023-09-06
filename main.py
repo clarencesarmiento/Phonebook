@@ -66,14 +66,20 @@ class EntryFrame(ctk.CTkFrame):
         self.phonenumber_entry.grid(row=4, column=1, padx=10, pady=(10, 0), columnspan=2, sticky='ew')
 
         # Frame Buttons
-        self.add_button = ctk.CTkButton(self, text='Add', cursor='hand2', command=self.add_contact)
+        self.add_contact_icon = ctk.CTkImage(Image.open('assets/add_contact.png'), size=(32, 32))
+        self.add_button = ctk.CTkButton(self, image=self.add_contact_icon, compound='right', text='Add', cursor='hand2',
+                                        command=self.add_contact, anchor='center')
         self.add_button.grid(row=5, column=0, padx=10, pady=(10, 0), sticky='ew')
         self.add_button.bind('<Return>', self.add_contact)
 
-        self.update_button = ctk.CTkButton(self, text='Update', cursor='hand2', command=self.update_contact)
+        self.update_contact_icon = ctk.CTkImage(Image.open('assets/update.png'), size=(32, 32))
+        self.update_button = ctk.CTkButton(self, image=self.update_contact_icon, compound='right', text='Update',
+                                           cursor='hand2', command=self.update_contact, anchor='center')
         self.update_button.grid(row=5, column=1, padx=10, pady=(10, 0), sticky='ew')
 
-        self.delete_button = ctk.CTkButton(self, text='Delete', cursor='hand2', command=self.delete_contact)
+        self.delete_contact_icon = ctk.CTkImage(Image.open('assets/delete_contact.png'), size=(32, 32))
+        self.delete_button = ctk.CTkButton(self, image=self.delete_contact_icon, compound='right', text='Delete',
+                                           cursor='hand2', command=self.delete_contact, anchor='center')
         self.delete_button.grid(row=5, column=2, padx=10, pady=(10, 0), sticky='ew')
 
         self.clear_statusbox_button = ctk.CTkButton(self, text='Clear', cursor='hand2', command=self.clear_statusbox)
@@ -219,7 +225,7 @@ class DataFrame(ctk.CTkFrame):
         self.style.configure("Treeview", rowheight=30, font=('times new romans', 15), borderwidth=5)
         # self.style.configure("Treeview", rowheight=30, font=('Calibri', 15), background=self.bg_color,
         #                      foreground=self.text_color, fieldbackground=self.bg_color, borderwidth=5)
-        # self.style.map('Treeview', background=[('selected', self.bg_color)], foreground=[('selected', self.selected_color)])
+        self.style.map('Treeview', background=[('selected', '#183D3D')], foreground=[('selected', 'white')])
 
         # Create Treeview
         self.db_view = ttk.Treeview(self, columns=("firstname", "lastname", "phonenumber"), show='headings')
