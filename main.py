@@ -231,11 +231,10 @@ class DataFrame(ctk.CTkFrame):
         self.db_view = ttk.Treeview(self, columns=("firstname", "lastname", "phonenumber"), show='headings')
 
         # Place Scrollbar
-        self.scrollbar = ctk.CTkScrollbar(self, orientation='vertical')
+        self.scrollbar = ctk.CTkScrollbar(self, orientation='vertical', command=self.db_view.yview)
         self.scrollbar.grid(row=2, column=3, padx=(0, 5), pady=10, sticky='ns')
 
         self.db_view.configure(yscrollcommand=self.scrollbar.set)
-        self.scrollbar.configure(command=self.db_view.yview)
 
         # Create Headings
         self.db_view.heading("firstname", text="First Name", anchor='w')
