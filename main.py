@@ -57,26 +57,26 @@ class EntryFrame(ctk.CTkFrame):
         # Frame Entries
         self.firstname_entry = ctk.CTkEntry(self, placeholder_text='Enter First Name', textvariable=self.user_firstname,
                                             validatecommand=self.firstname_has_input, validate='focus')
-        self.firstname_entry.grid(row=2, column=1, padx=10, pady=(10, 0), sticky='ew')
+        self.firstname_entry.grid(row=2, column=1, padx=(10, 25), pady=(10, 0), columnspan=2, sticky='ew')
 
         self.lastname_entry = ctk.CTkEntry(self, placeholder_text='Enter Last Name', textvariable=self.user_lastname,
                                            validatecommand=self.lastname_has_input, validate='focus')
-        self.lastname_entry.grid(row=3, column=1, padx=10, pady=(10, 0), sticky='ew')
+        self.lastname_entry.grid(row=3, column=1, padx=(10, 25), pady=(10, 0), columnspan=2, sticky='ew')
 
         self.phonenumber_entry = ctk.CTkEntry(self, placeholder_text='Enter Phone Number',
                                               textvariable=self.user_phonenumber,  validatecommand=self.phonenumber_has_input,
                                               validate='focus')
-        self.phonenumber_entry.grid(row=4, column=1, padx=10, pady=(10, 0), sticky='ew')
+        self.phonenumber_entry.grid(row=4, column=1, padx=(10, 25), pady=(10, 0), columnspan=2, sticky='ew')
 
         # Entry Labels
-        self.firstname_entry_required = ctk.CTkLabel(self, text='*', text_color='#C63D2F')
-        self.firstname_entry_required.grid(row=2, column=2, padx=10, pady=(10, 0), sticky='w')
+        self.firstname_entry_required = ctk.CTkLabel(self, text='*', text_color='#C63D2F', fg_color='transparent')
+        self.firstname_entry_required.grid(row=2, column=2, padx=15, pady=(10, 0), sticky='e')
 
         self.lastname_entry_required = ctk.CTkLabel(self, text='*', text_color='#C63D2F')
-        self.lastname_entry_required.grid(row=3, column=2, padx=10, pady=(10, 0), sticky='w')
+        self.lastname_entry_required.grid(row=3, column=2, padx=15, pady=(10, 0), sticky='e')
 
         self.phonenumber_entry_required = ctk.CTkLabel(self, text='*', text_color='#C63D2F')
-        self.phonenumber_entry_required.grid(row=4, column=2, padx=10, pady=(10, 0), sticky='w')
+        self.phonenumber_entry_required.grid(row=4, column=2, padx=15, pady=(10, 0), sticky='e')
 
         # Frame Buttons
         self.add_contact_icon = ctk.CTkImage(Image.open('assets/add_contact.png'), size=(32, 32))
@@ -279,7 +279,7 @@ class DataFrame(ctk.CTkFrame):
 
         # Place Scrollbar
         self.scrollbar = ctk.CTkScrollbar(self, orientation='vertical', command=self.db_view.yview)
-        self.scrollbar.grid(row=2, column=3, padx=(0, 5), pady=10, sticky='ns')
+        self.scrollbar.grid(row=2, column=3, padx=(0, 5), pady=(30, 0), sticky='ns')
 
         self.db_view.configure(yscrollcommand=self.scrollbar.set)
 
