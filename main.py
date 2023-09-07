@@ -55,21 +55,34 @@ class EntryFrame(ctk.CTkFrame):
         self.phone_number_label.grid(row=4, column=0, padx=10, pady=(10, 0), sticky='ew')
 
         # Frame Entries
-        self.firstname_entry = ctk.CTkEntry(self, placeholder_text='Enter First Name', textvariable=self.user_firstname)
-        self.firstname_entry.grid(row=2, column=1, padx=10, pady=(10, 0), columnspan=2, sticky='ew')
+        self.firstname_entry = ctk.CTkEntry(self, placeholder_text='Enter First Name', textvariable=self.user_firstname,
+                                            validatecommand=self.firstname_has_input, validate='focus')
+        self.firstname_entry.grid(row=2, column=1, padx=10, pady=(10, 0), sticky='ew')
 
-        self.lastname_entry = ctk.CTkEntry(self, placeholder_text='Enter Last Name', textvariable=self.user_lastname)
-        self.lastname_entry.grid(row=3, column=1, padx=10, pady=(10, 0), columnspan=2, sticky='ew')
+        self.lastname_entry = ctk.CTkEntry(self, placeholder_text='Enter Last Name', textvariable=self.user_lastname,
+                                           validatecommand=self.lastname_has_input, validate='focus')
+        self.lastname_entry.grid(row=3, column=1, padx=10, pady=(10, 0), sticky='ew')
 
         self.phonenumber_entry = ctk.CTkEntry(self, placeholder_text='Enter Phone Number',
-                                              textvariable=self.user_phonenumber, )
-        self.phonenumber_entry.grid(row=4, column=1, padx=10, pady=(10, 0), columnspan=2, sticky='ew')
+                                              textvariable=self.user_phonenumber,  validatecommand=self.phonenumber_has_input,
+                                              validate='focus')
+        self.phonenumber_entry.grid(row=4, column=1, padx=10, pady=(10, 0), sticky='ew')
+
+        # Entry Labels
+        self.firstname_entry_required = ctk.CTkLabel(self, text='*', text_color='#C63D2F')
+        self.firstname_entry_required.grid(row=2, column=2, padx=10, pady=(10, 0), sticky='w')
+
+        self.lastname_entry_required = ctk.CTkLabel(self, text='*', text_color='#C63D2F')
+        self.lastname_entry_required.grid(row=3, column=2, padx=10, pady=(10, 0), sticky='w')
+
+        self.phonenumber_entry_required = ctk.CTkLabel(self, text='*', text_color='#C63D2F')
+        self.phonenumber_entry_required.grid(row=4, column=2, padx=10, pady=(10, 0), sticky='w')
 
         # Frame Buttons
         self.add_contact_icon = ctk.CTkImage(Image.open('assets/add_contact.png'), size=(32, 32))
         self.add_button = ctk.CTkButton(self, image=self.add_contact_icon, compound='right', text='Add', cursor='hand2',
                                         command=self.add_contact, anchor='center')
-        self.add_button.grid(row=5, column=0, padx=10, pady=(10, 0), sticky='ew')
+        self.add_button.grid(row=5, column=0, padx=(10, 0), pady=(10, 0), sticky='ew')
         self.add_button.bind('<Return>', self.add_contact)
 
         self.update_contact_icon = ctk.CTkImage(Image.open('assets/update.png'), size=(32, 32))
@@ -80,7 +93,7 @@ class EntryFrame(ctk.CTkFrame):
         self.delete_contact_icon = ctk.CTkImage(Image.open('assets/delete_contact.png'), size=(32, 32))
         self.delete_button = ctk.CTkButton(self, image=self.delete_contact_icon, compound='right', text='Delete',
                                            cursor='hand2', command=self.delete_contact, anchor='center')
-        self.delete_button.grid(row=5, column=2, padx=10, pady=(10, 0), sticky='ew')
+        self.delete_button.grid(row=5, column=2, padx=(0, 10), pady=(10, 0), sticky='ew')
 
         self.clear_statusbox_button = ctk.CTkButton(self, text='Clear', cursor='hand2', command=self.clear_statusbox)
         self.clear_statusbox_button.grid(row=7, column=2, padx=10, pady=10, sticky='ew')
@@ -92,6 +105,31 @@ class EntryFrame(ctk.CTkFrame):
         # Frame Mark
         self.framemark_label = ctk.CTkLabel(self, text='C.Sarmiento 2023 Version 1.1', font=('helvetica', 10))
         self.framemark_label.grid(row=7, column=0, padx=10, pady=(0, 2), sticky='sw')
+
+    def firstname_has_input(self):
+        if len(self.get_entry_data()[0]) != 0:
+            self.firstname_entry_required.configure(text_color='#A6FF96')
+            return True
+        else:
+            self.firstname_entry_required.configure(text_color='#C63D2F')
+            return False
+
+    def lastname_has_input(self):
+        if len(self.get_entry_data()[1]) != 0:
+            self.lastname_entry_required.configure(text_color='#A6FF96')
+            return True
+        else:
+            self.lastname_entry_required.configure(text_color='#C63D2F')
+            return False
+
+    def phonenumber_has_input(self):
+        phone_number_format = r"^(0?9[0-9]{9})$"
+        if re.search(phone_number_format, self.get_entry_data()[2]) and len(self.get_entry_data()[2]) != 0:
+            self.phonenumber_entry_required.configure(text_color='#A6FF96')
+            return True
+        else:
+            self.phonenumber_entry_required.configure(text_color='#C63D2F')
+            return False
 
     def add_status(self, text):
         status = f"$ {text}\n"
@@ -110,8 +148,11 @@ class EntryFrame(ctk.CTkFrame):
 
     def clear_entrybox(self):
         self.firstname_entry.delete(0, 'end')
+        self.firstname_entry_required.configure(text_color='#C63D2F')
         self.lastname_entry.delete(0, 'end')
+        self.lastname_entry_required.configure(text_color='#C63D2F')
         self.phonenumber_entry.delete(0, 'end')
+        self.phonenumber_entry_required.configure(text_color='#C63D2F')
 
     def add_contact(self, event=None):
         phone_number_format = r"^(0?9[0-9]{9})$"
@@ -190,6 +231,8 @@ class DataFrame(ctk.CTkFrame):
         self.to_search = StringVar()
         self.to_search.trace('w', self.search)
 
+        self.data_count = IntVar()
+
         # Configure Frame Columns
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
@@ -212,6 +255,10 @@ class DataFrame(ctk.CTkFrame):
         # Button
         self.clear_button = ctk.CTkButton(self, text='Clear', cursor='hand2', command=self.clear)
         self.clear_button.grid(row=1, column=2, padx=10, pady=10, sticky='ew')
+
+        # Show number of Data
+        self.show_datacount = ctk.CTkLabel(self, text_color='white')
+        self.show_datacount.grid(row=3, column=0, padx=10, pady=(0, 5), columnspan=2, sticky='w')
 
         # Treeview Customisation (based on CTk Theme)
         # self.bg_color = self._apply_appearance_mode(ctk.ThemeManager.theme['CTkFrame']['fg_color'])
@@ -240,7 +287,7 @@ class DataFrame(ctk.CTkFrame):
         self.db_view.heading("firstname", text="First Name", anchor='w')
         self.db_view.heading("lastname", text="Last Name", anchor='w')
         self.db_view.heading("phonenumber", text="Phone Number", anchor='w')
-        self.db_view.grid(row=2, column=0, padx=(15, 0), pady=15, columnspan=3, sticky='nsew')
+        self.db_view.grid(row=2, column=0, padx=(15, 0), pady=(15, 0), columnspan=3, sticky='nsew')
 
         # Bind Double Left Click
         self.db_view.bind('<Double 1>', self.getrow)
@@ -257,10 +304,17 @@ class DataFrame(ctk.CTkFrame):
         self.entry_frame.user_phonenumber.set(item['values'][2])
 
     def update_dataframe(self, rows):
+        counter = 0
         self.db_view.delete(*self.db_view.get_children())
         for item in sorted(rows):
             firstname, lastname, phonenumber = item[0], item[1], item[2]
             self.db_view.insert('', 'end', values=(firstname, lastname, phonenumber))
+            counter += 1
+        self.show_datacount.configure(text=f'Showing {counter} of contact record.')
+        # self.show_datacount.configure(state='normal')
+        # self.show_datacount.delete('0.0', 'end')
+        # self.show_datacount.insert('end', f'Showing {counter} of contact record.')
+        # self.show_datacount.configure(state='disable')
 
     def search(self, *args):
         to_search = self.to_search.get()
