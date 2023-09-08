@@ -268,8 +268,8 @@ class DataFrame(ctk.CTkFrame):
         # Configure Treeview Style
         self.style = ttk.Style()
         self.style.theme_use('clam')
-        self.style.configure("Treeview.Heading", font=('helvetica', 15, 'bold'))
-        self.style.configure("Treeview", rowheight=30, font=('times new romans', 15), borderwidth=5)
+        self.style.configure("Treeview.Heading", font=('Verdana', 15, 'bold'))
+        self.style.configure("Treeview", rowheight=30, font=('Verdana', 15), borderwidth=5)
         # self.style.configure("Treeview", rowheight=30, font=('Calibri', 15), background=self.bg_color,
         #                      foreground=self.text_color, fieldbackground=self.bg_color, borderwidth=5)
         self.style.map('Treeview', background=[('selected', '#183D3D')], foreground=[('selected', 'white')])
@@ -311,10 +311,6 @@ class DataFrame(ctk.CTkFrame):
             self.db_view.insert('', 'end', values=(firstname, lastname, phonenumber))
             counter += 1
         self.show_datacount.configure(text=f'Showing {counter} of contact record.')
-        # self.show_datacount.configure(state='normal')
-        # self.show_datacount.delete('0.0', 'end')
-        # self.show_datacount.insert('end', f'Showing {counter} of contact record.')
-        # self.show_datacount.configure(state='disable')
 
     def search(self, *args):
         to_search = self.to_search.get()
