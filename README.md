@@ -1,6 +1,5 @@
 # Phonebook ☎️
 ![image](https://github.com/clarencesarmiento/Phonebook/blob/e046dc137862196b2ff27964bba9d9ef1aea7f74/phonebook_interface.png)
-## [.exe](https://drive.google.com/drive/folders/1PVd9H62XAzxCl5GUev12brZvLXPk5fEp?usp=sharing)
 ## DESCRIPTION:
 A python program with Graphic User Interface that lets the user to
 - Add Contact
