@@ -15,7 +15,7 @@ Add Contact
 - Adds the contact details to the database.
 
 Update Contact
-- Updates contact's name. (Does not include phone number. To avoid phone number duplicates, use add contact.)
+- Updates contact.
 
 Delete Contact
 - Deletes contact record.
