@@ -56,17 +56,18 @@ class EntryFrame(ctk.CTkFrame):
 
         # Frame Entries
         self.firstname_entry = ctk.CTkEntry(self, placeholder_text='Enter First Name', textvariable=self.user_firstname,
-                                            validatecommand=self.firstname_has_input)
+                                            validatecommand=self.firstname_has_input, validate='focus')
         self.firstname_entry.grid(row=2, column=1, padx=(10, 25), pady=(10, 0), columnspan=2, sticky='ew')
         self.firstname_entry.bind('<KeyRelease>', self.firstname_has_input)
 
         self.lastname_entry = ctk.CTkEntry(self, placeholder_text='Enter Last Name', textvariable=self.user_lastname,
-                                           validatecommand=self.lastname_has_input)
+                                           validatecommand=self.lastname_has_input, validate='focus')
         self.lastname_entry.grid(row=3, column=1, padx=(10, 25), pady=(10, 0), columnspan=2, sticky='ew')
         self.lastname_entry.bind('<KeyRelease>', self.lastname_has_input)
 
         self.phonenumber_entry = ctk.CTkEntry(self, placeholder_text='Enter Phone Number',
-                                              textvariable=self.user_phonenumber,  validatecommand=self.phonenumber_has_input,)
+                                              textvariable=self.user_phonenumber,
+                                              validatecommand=self.phonenumber_has_input, validate='focus')
         self.phonenumber_entry.grid(row=4, column=1, padx=(10, 25), pady=(10, 0), columnspan=2, sticky='ew')
         self.phonenumber_entry.bind('<KeyRelease>', self.phonenumber_has_input)
 
@@ -100,14 +101,15 @@ class EntryFrame(ctk.CTkFrame):
         self.clear_statusbox_button.grid(row=7, column=2, padx=10, pady=10, sticky='ew')
 
         # Status Text Box
-        self.statusbox = ctk.CTkTextbox(self, corner_radius=10, fg_color='#040D12', font=('consolas', 12), text_color='white')
+        self.statusbox = ctk.CTkTextbox(self, corner_radius=10, fg_color='#040D12', font=('consolas', 12),
+                                        text_color='white')
         self.statusbox.grid(row=6, column=0, padx=10, pady=(10, 0), columnspan=3, sticky='nsew')
 
         # Frame Mark
         self.framemark_label = ctk.CTkLabel(self, text='C.Sarmiento 2023 Version 1.1', font=('helvetica', 10))
         self.framemark_label.grid(row=7, column=0, padx=10, pady=(0, 2), sticky='sw')
 
-    def firstname_has_input(self, event):
+    def firstname_has_input(self, event=None):
         if len(self.get_entry_data()[0]) != 0:
             self.firstname_entry_required.configure(text_color='#A6FF96')
             return True
@@ -115,7 +117,7 @@ class EntryFrame(ctk.CTkFrame):
             self.firstname_entry_required.configure(text_color='#C63D2F')
             return False
 
-    def lastname_has_input(self, event):
+    def lastname_has_input(self, event=None):
         if len(self.get_entry_data()[1]) != 0:
             self.lastname_entry_required.configure(text_color='#A6FF96')
             return True
@@ -123,7 +125,7 @@ class EntryFrame(ctk.CTkFrame):
             self.lastname_entry_required.configure(text_color='#C63D2F')
             return False
 
-    def phonenumber_has_input(self, event):
+    def phonenumber_has_input(self, event=None):
         if len(self.get_entry_data()[2]) != 0:
             self.phonenumber_entry_required.configure(text_color='#A6FF96')
             return True
@@ -173,7 +175,7 @@ class EntryFrame(ctk.CTkFrame):
                     self.conn.commit()
                     self.add_status(f'New Contact Added Successfully.')
                 else:
-                    CTkMessagebox(title='Contact Record', message='Phone number already in Record.')
+                    CTkMessagebox(title='Contact Record', message='Phone number already in Record.', sound=True)
                 self.clear_entrybox()
             else:
                 CTkMessagebox(title='Error', message='Wrong Phone number format.', icon='cancel', sound=True)
@@ -183,20 +185,45 @@ class EntryFrame(ctk.CTkFrame):
             CTkMessagebox(title='Warning', message='All fields are Required.', icon='warning', sound=True)
 
     def update_contact(self):
+        phone_number_format = r"^(0?9[0-9]{9})$"
         if self.firstname_has_input(None) and self.lastname_has_input(None) and self.phonenumber_has_input(None):
+            # Get data in entry widgets
             user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
-            response = CTkMessagebox(title='Confirm Update', message='Are you sure to update this contact?',
-                                     icon='question', option_1="No", option_2="Yes")
-            if response.get() == 'Yes':
-                query = 'UPDATE contacts SET FirstName = ?, LastName = ? WHERE PhoneNumber = ?'
-                datacontact = (user_firstname, user_lastname, user_phonenumber)
-                self.cursor.execute(query, datacontact)
-                self.conn.commit()
-                self.data_frame.clear()
-                self.clear_entrybox()
-                self.add_status('Contact Updated Successfully.')
+            # Get data in the selected row from the table
+            table = self.data_frame.db_view
+            table_items = table.item(table.focus())
+            current_firstname, current_lastname, current_phonenumber = table_items['values'][0], table_items['values'][
+                1], str(table_items['values'][2])
+            # Data in entry widgets has changed, update it in the database
+            if current_firstname != user_firstname or current_lastname != user_lastname or current_phonenumber != user_phonenumber:
+                # Correct number format
+                if re.search(phone_number_format, user_phonenumber):
+                    # Number exists in the database
+                    self.cursor.execute('SELECT COUNT(*) FROM contacts WHERE PhoneNumber = ?', (user_phonenumber))
+                    count = self.cursor.fetchone()[0]
+
+                    if count >= 1:
+                        CTkMessagebox(title='Contact Record', message='Duplicate phone number. Update not allowed.',
+                                      icon='cancel', sound=True)
+                    else:
+                        response = CTkMessagebox(title='Confirm Update', message='Are you sure to update this contact?',
+                                                 icon='question', option_1="No", option_2="Yes", sound=True)
+                        if response.get() == 'Yes':
+                            query = ("UPDATE contacts SET FirstName = ?, LastName = ?, PhoneNumber = ? "
+                                     "WHERE FirstName = ? AND LastName = ? AND PhoneNumber = ?")
+                            datacontact = (user_firstname, user_lastname, user_phonenumber,
+                                           current_firstname, current_lastname, current_phonenumber)
+                            self.cursor.execute(query, datacontact)
+                            self.conn.commit()
+                            self.data_frame.clear()
+                            self.clear_entrybox()
+                            self.add_status('Contact Updated Successfully.')
+                        else:
+                            pass
+                else:
+                    CTkMessagebox(title='Error', message='Wrong Phone number format.', icon='cancel', sound=True)
             else:
-                pass
+                self.add_status('No changes detected, Data not updated.')
         else:
             CTkMessagebox(title='Warning', message='No Contact selected to update.', icon='warning', sound=True)
 
