@@ -199,7 +199,7 @@ class EntryFrame(ctk.CTkFrame):
                 # Correct number format
                 if re.search(phone_number_format, user_phonenumber):
                     # Number exists in the database
-                    self.cursor.execute('SELECT COUNT(*) FROM contacts WHERE PhoneNumber = ?', (user_phonenumber))
+                    self.cursor.execute('SELECT COUNT(*) FROM contacts WHERE PhoneNumber = ?', user_phonenumber)
                     count = self.cursor.fetchone()[0]
 
                     if count >= 1:
