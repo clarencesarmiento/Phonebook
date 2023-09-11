@@ -56,17 +56,19 @@ class EntryFrame(ctk.CTkFrame):
 
         # Frame Entries
         self.firstname_entry = ctk.CTkEntry(self, placeholder_text='Enter First Name', textvariable=self.user_firstname,
-                                            validatecommand=self.firstname_has_input, validate='focus')
+                                            validatecommand=self.firstname_has_input)
         self.firstname_entry.grid(row=2, column=1, padx=(10, 25), pady=(10, 0), columnspan=2, sticky='ew')
+        self.firstname_entry.bind('<KeyRelease>', self.firstname_has_input)
 
         self.lastname_entry = ctk.CTkEntry(self, placeholder_text='Enter Last Name', textvariable=self.user_lastname,
-                                           validatecommand=self.lastname_has_input, validate='focus')
+                                           validatecommand=self.lastname_has_input)
         self.lastname_entry.grid(row=3, column=1, padx=(10, 25), pady=(10, 0), columnspan=2, sticky='ew')
+        self.lastname_entry.bind('<KeyRelease>', self.lastname_has_input)
 
         self.phonenumber_entry = ctk.CTkEntry(self, placeholder_text='Enter Phone Number',
-                                              textvariable=self.user_phonenumber,  validatecommand=self.phonenumber_has_input,
-                                              validate='focus')
+                                              textvariable=self.user_phonenumber,  validatecommand=self.phonenumber_has_input,)
         self.phonenumber_entry.grid(row=4, column=1, padx=(10, 25), pady=(10, 0), columnspan=2, sticky='ew')
+        self.phonenumber_entry.bind('<KeyRelease>', self.phonenumber_has_input)
 
         # Entry Labels
         self.firstname_entry_required = ctk.CTkLabel(self, text='*', text_color='#C63D2F', fg_color='transparent')
@@ -106,7 +108,7 @@ class EntryFrame(ctk.CTkFrame):
         self.framemark_label = ctk.CTkLabel(self, text='C.Sarmiento 2023 Version 1.0', font=('helvetica', 10))
         self.framemark_label.grid(row=7, column=0, padx=10, pady=(0, 2), sticky='sw')
 
-    def firstname_has_input(self):
+    def firstname_has_input(self, event):
         if len(self.get_entry_data()[0]) != 0:
             self.firstname_entry_required.configure(text_color='#A6FF96')
             return True
@@ -114,7 +116,7 @@ class EntryFrame(ctk.CTkFrame):
             self.firstname_entry_required.configure(text_color='#C63D2F')
             return False
 
-    def lastname_has_input(self):
+    def lastname_has_input(self, event):
         if len(self.get_entry_data()[1]) != 0:
             self.lastname_entry_required.configure(text_color='#A6FF96')
             return True
@@ -122,7 +124,7 @@ class EntryFrame(ctk.CTkFrame):
             self.lastname_entry_required.configure(text_color='#C63D2F')
             return False
 
-    def phonenumber_has_input(self):
+    def phonenumber_has_input(self, event):
         phone_number_format = r"^(0?9[0-9]{9})$"
         if re.search(phone_number_format, self.get_entry_data()[2]) and len(self.get_entry_data()[2]) != 0:
             self.phonenumber_entry_required.configure(text_color='#A6FF96')
@@ -156,8 +158,8 @@ class EntryFrame(ctk.CTkFrame):
 
     def add_contact(self, event=None):
         phone_number_format = r"^(0?9[0-9]{9})$"
-        user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
-        if user_firstname and user_lastname and user_phonenumber != '':
+        if self.firstname_has_input and self.lastname_has_input and self.phonenumber_has_input:
+            user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
             if re.search(phone_number_format, user_phonenumber):
                 # Check if the data already exists in the database
                 query = 'SELECT * FROM contacts WHERE PhoneNumber = ?'
@@ -182,8 +184,8 @@ class EntryFrame(ctk.CTkFrame):
             CTkMessagebox(title='Warning', message='All fields are Required.', icon='warning', sound=True)
 
     def update_contact(self):
-        user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
-        if user_firstname and user_lastname and user_phonenumber != '':
+        if self.firstname_has_input and self.lastname_has_input and self.phonenumber_has_input:
+            user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
             response = CTkMessagebox(title='Confirm Update', message='Are you sure to update this contact?',
                                      icon='question', option_1="No", option_2="Yes")
             if response.get() == 'Yes':
