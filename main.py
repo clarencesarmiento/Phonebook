@@ -105,7 +105,7 @@ class EntryFrame(ctk.CTkFrame):
         self.statusbox.grid(row=6, column=0, padx=10, pady=(10, 0), columnspan=3, sticky='nsew')
 
         # Frame Mark
-        self.framemark_label = ctk.CTkLabel(self, text='C.Sarmiento 2023 Version 1.0', font=('helvetica', 10))
+        self.framemark_label = ctk.CTkLabel(self, text='C.Sarmiento 2023 Version 1.1', font=('helvetica', 10))
         self.framemark_label.grid(row=7, column=0, padx=10, pady=(0, 2), sticky='sw')
 
     def firstname_has_input(self, event):
