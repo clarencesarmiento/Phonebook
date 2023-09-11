@@ -85,7 +85,6 @@ class EntryFrame(ctk.CTkFrame):
         self.add_button = ctk.CTkButton(self, image=self.add_contact_icon, compound='right', text='Add', cursor='hand2',
                                         command=self.add_contact, anchor='center')
         self.add_button.grid(row=5, column=0, padx=(10, 0), pady=(10, 0), sticky='ew')
-        self.add_button.bind('<Return>', self.add_contact)
 
         self.update_contact_icon = ctk.CTkImage(Image.open('assets/update.png'), size=(32, 32))
         self.update_button = ctk.CTkButton(self, image=self.update_contact_icon, compound='right', text='Update',
@@ -155,7 +154,7 @@ class EntryFrame(ctk.CTkFrame):
         self.phonenumber_entry.delete(0, 'end')
         self.phonenumber_entry_required.configure(text_color='#C63D2F')
 
-    def add_contact(self, event=None):
+    def add_contact(self):
         phone_number_format = r"^(0?9[0-9]{9})$"
         if self.firstname_has_input(None) and self.lastname_has_input(None) and self.phonenumber_has_input(None):
             user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
