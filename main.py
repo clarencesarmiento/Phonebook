@@ -125,8 +125,7 @@ class EntryFrame(ctk.CTkFrame):
             return False
 
     def phonenumber_has_input(self, event):
-        phone_number_format = r"^(0?9[0-9]{9})$"
-        if re.search(phone_number_format, self.get_entry_data()[2]) and len(self.get_entry_data()[2]) != 0:
+        if len(self.get_entry_data()[2]) != 0:
             self.phonenumber_entry_required.configure(text_color='#A6FF96')
             return True
         else:
@@ -158,7 +157,7 @@ class EntryFrame(ctk.CTkFrame):
 
     def add_contact(self, event=None):
         phone_number_format = r"^(0?9[0-9]{9})$"
-        if self.firstname_has_input and self.lastname_has_input and self.phonenumber_has_input:
+        if self.firstname_has_input(None) and self.lastname_has_input(None) and self.phonenumber_has_input(None):
             user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
             if re.search(phone_number_format, user_phonenumber):
                 # Check if the data already exists in the database
@@ -180,11 +179,12 @@ class EntryFrame(ctk.CTkFrame):
             else:
                 CTkMessagebox(title='Error', message='Wrong Phone number format.', icon='cancel', sound=True)
                 self.phonenumber_entry.delete(0, 'end')
+                self.phonenumber_entry_required.configure(text_color='#C63D2F')
         else:
             CTkMessagebox(title='Warning', message='All fields are Required.', icon='warning', sound=True)
 
     def update_contact(self):
-        if self.firstname_has_input and self.lastname_has_input and self.phonenumber_has_input:
+        if self.firstname_has_input(None) and self.lastname_has_input(None) and self.phonenumber_has_input(None):
             user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
             response = CTkMessagebox(title='Confirm Update', message='Are you sure to update this contact?',
                                      icon='question', option_1="No", option_2="Yes")
@@ -202,8 +202,8 @@ class EntryFrame(ctk.CTkFrame):
             CTkMessagebox(title='Warning', message='No Contact selected to update.', icon='warning', sound=True)
 
     def delete_contact(self):
-        user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
-        if user_firstname and user_lastname and user_phonenumber != '':
+        if self.firstname_has_input(None) and self.lastname_has_input(None) and self.phonenumber_has_input(None):
+            user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
             response = CTkMessagebox(title='Confirm Delete', message='Are you sure to delete this contact?',
                                      icon='question',
                                      option_1="No", option_2="Yes")
