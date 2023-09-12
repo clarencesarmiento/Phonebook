@@ -234,6 +234,17 @@ class EntryFrame(ctk.CTkFrame):
     def delete_contact(self):
         if self.firstname_has_input(None) and self.lastname_has_input(None) and self.phonenumber_has_input(None):
             user_firstname, user_lastname, user_phonenumber = self.get_entry_data()
+            # check if the data in database
+            query = 'SELECT COUNT(*) FROM contacts WHERE FirstName = ? AND LastName = ? AND PhoneNumber = ?'
+            datacontact = (user_firstname, user_lastname, user_phonenumber)
+            self.cursor.execute(query, datacontact)
+            count = self.cursor.fetchone()[0]
+            # if not, cancel the deletion of data
+            if count != 1:
+                CTkMessagebox(title='Contact Record', message="Data doesn't exists.",
+                              icon='cancel', sound=True)
+                return
+
             response = CTkMessagebox(title='Confirm Delete', message='Are you sure to delete this contact?',
                                      icon='question',
                                      option_1="No", option_2="Yes")
