@@ -196,32 +196,36 @@ class EntryFrame(ctk.CTkFrame):
                 1], str(table_items['values'][2])
             # Data in entry widgets has changed, update it in the database
             if current_firstname != user_firstname or current_lastname != user_lastname or current_phonenumber != user_phonenumber:
-                # Correct number format
-                if re.search(phone_number_format, user_phonenumber):
-                    # Number exists in the database
-                    self.cursor.execute('SELECT COUNT(*) FROM contacts WHERE PhoneNumber = ?', user_phonenumber)
-                    count = self.cursor.fetchone()[0]
-
-                    if count >= 1:
-                        CTkMessagebox(title='Contact Record', message='Duplicate phone number. Update not allowed.',
-                                      icon='cancel', sound=True)
+                # The phonenumber has changed
+                if current_phonenumber != user_phonenumber:
+                    # check the format
+                    if re.search(phone_number_format, user_phonenumber):
+                        # check if the new number exists in the database
+                        self.cursor.execute('SELECT COUNT(*) FROM contacts WHERE PhoneNumber = ?', user_phonenumber)
+                        count = self.cursor.fetchone()[0]
+                        # if the number do exist, no updates will be done
+                        if count > 0:
+                            CTkMessagebox(title='Contact Record', message='Duplicate phone number. Update not allowed.',
+                                          icon='cancel', sound=True)
+                            return
                     else:
-                        response = CTkMessagebox(title='Confirm Update', message='Are you sure to update this contact?',
-                                                 icon='question', option_1="No", option_2="Yes", sound=True)
-                        if response.get() == 'Yes':
-                            query = ("UPDATE contacts SET FirstName = ?, LastName = ?, PhoneNumber = ? "
-                                     "WHERE FirstName = ? AND LastName = ? AND PhoneNumber = ?")
-                            datacontact = (user_firstname, user_lastname, user_phonenumber,
-                                           current_firstname, current_lastname, current_phonenumber)
-                            self.cursor.execute(query, datacontact)
-                            self.conn.commit()
-                            self.data_frame.clear()
-                            self.clear_entrybox()
-                            self.add_status('Contact Updated Successfully.')
-                        else:
-                            pass
+                        CTkMessagebox(title='Error', message='Wrong Phone number format.', icon='cancel', sound=True)
+                        return
+
+                response = CTkMessagebox(title='Confirm Update', message='Are you sure to update this contact?',
+                                         icon='question', option_1="No", option_2="Yes", sound=True)
+                if response.get() == 'Yes':
+                    query = ("UPDATE contacts SET FirstName = ?, LastName = ?, PhoneNumber = ? "
+                             "WHERE FirstName = ? AND LastName = ? AND PhoneNumber = ?")
+                    datacontact = (user_firstname, user_lastname, user_phonenumber,
+                                   current_firstname, current_lastname, current_phonenumber)
+                    self.cursor.execute(query, datacontact)
+                    self.conn.commit()
+                    self.data_frame.clear()
+                    self.clear_entrybox()
+                    self.add_status('Contact Updated Successfully.')
                 else:
-                    CTkMessagebox(title='Error', message='Wrong Phone number format.', icon='cancel', sound=True)
+                    pass
             else:
                 self.add_status('No changes detected, Data not updated.')
         else:
