@@ -1,6 +1,6 @@
 # Phonebook ☎️
 ![image](https://github.com/clarencesarmiento/Phonebook/blob/e046dc137862196b2ff27964bba9d9ef1aea7f74/phonebook_interface.png)
-## [.exe](https://www.mediafire.com/file/aua67nwbklmx0ka/Phonebook_%2528.exe%2529.rar/file)
+## [.exe](https://www.mediafire.com/file/7mal7egoio7e8t5/Phonebook_V1.1_%2528.exe%2529.rar/file)
 ## DESCRIPTION:
 A python program with Graphic User Interface that lets the user to
 - Add Contact
@@ -15,7 +15,7 @@ Add Contact
 - Adds the contact details to the database.
 
 Update Contact
-- Updates contact's name. (Does not include phone number. To avoid phone number duplicates, use add contact.)
+- Updates contact.
 
 Delete Contact
 - Deletes contact record.
