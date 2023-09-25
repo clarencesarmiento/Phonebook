@@ -49,7 +49,7 @@ Download the appropriate version (32-bit or 64-bit) from the Microsoft Website a
 ### Usage
 Run the `main.py` using [python](https://www.python.org/).
 ```
-python main.py
+python phonebook_V#.py
 ```
 ## REFERENCES:
 [^1]: [Customtkinter](https://github.com/tomschimansky/customtkinter)
