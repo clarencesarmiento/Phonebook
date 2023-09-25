@@ -5,7 +5,7 @@
 A python program with Graphic User Interface that lets the user to
 - Add Contact
 - Update Contact
-- Delele Contact
+- Delete Contact
 - Search Contact
 ### How the Program Works?
 To create the modern graphic user interface look, the program utilizes a library `customtkinter`[^1]. For the data table, the program utilizes `ttk.treeview`[^2].
