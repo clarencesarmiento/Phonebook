@@ -83,9 +83,9 @@ class WindowFrame(ctk.CTkFrame):
         # Configure TreeView Style
         self.style = ttk.Style()
         self.style.theme_use('classic')
-        self.style.configure("Treeview.Heading", font=('Verdana', 15, 'bold'), foreground='#F5F5F5',
+        self.style.configure("Treeview.Heading", font=('Verdana', 18, 'bold'), foreground='#F5F5F5',
                              background='#27374D')
-        self.style.configure("Treeview", rowheight=30, font=('Verdana', 15), foreground='#272829', borderwidth=5)
+        self.style.configure("Treeview", rowheight=45, font=('Verdana', 14), foreground='#272829', borderwidth=5)
 
         # Create Treeview Table
         self.db_view = ttk.Treeview(self, columns=('name', 'phonenumber', 'email'), show='headings')
