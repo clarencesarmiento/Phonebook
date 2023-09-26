@@ -3,7 +3,7 @@ from CTkMessagebox import CTkMessagebox
 from tkinter import *
 from tkinter import ttk
 from PIL import Image
-import pyodbc
+import sqlite3
 import re
 import os
 
@@ -12,16 +12,13 @@ ctk.set_default_color_theme('dark-blue')
 
 appWidth, appHeight = 850, 450
 
+# Define database path
 current_directory = os.getcwd()
-db_file_path = f'{current_directory}\\Phonebook.accdb'
-# Define database Configurations
-db_config = (
-    r'DRIVER={Microsoft Access Driver (*.mdb, *.accdb)};'
-    f'DBQ={db_file_path}'
-)
+db_file_path = f'{current_directory}\\phonebook.db'
 # Connect to Database
-conn = pyodbc.connect(db_config)
+conn = sqlite3.connect(db_file_path)
 cursor = conn.cursor()
+cursor.execute("CREATE TABLE IF NOT EXISTS record (name TEXT NOT NULL, phonenumber TEXT NOT NULL, email TEXT, tag TEXT)")
 
 
 # Create Window
@@ -134,7 +131,7 @@ class WindowFrame(ctk.CTkFrame):
                 response = CTkMessagebox(title='Confirm Delete', message='Are you sure to delete this contact?',
                                          icon='question', option_1='No', option_2='Yes')
                 if response.get() == 'Yes':
-                    query = 'DELETE FROM record WHERE name = ? AND phonenumber = ? AND email = ? AND tag = ?'
+                    query = 'DELETE FROM record WHERE name = ? AND phonenumber = ? AND (email = ? or email IS NULL) AND tag = ?'
                     data = (name, phonenumber, email, tag)
                     cursor.execute(query, data)
                     conn.commit()
@@ -153,7 +150,7 @@ class WindowFrame(ctk.CTkFrame):
         if tag == 'All':
             cursor.execute('SELECT * FROM record ORDER BY name ASC')
         else:
-            cursor.execute('SELECT * FROM record WHERE tag = ? ORDER BY name ASC ', tag)
+            cursor.execute('SELECT * FROM record WHERE tag = ? ORDER BY name ASC ', (tag,))
         rows = cursor.fetchall()
         self.update_treeview(rows)
 
@@ -162,7 +159,7 @@ class WindowFrame(ctk.CTkFrame):
         if choice == 'All':
             cursor.execute('SELECT * FROM record ORDER BY name ASC')
         else:
-            cursor.execute('SELECT * FROM record WHERE tag = ? ORDER BY name ASC ', choice)
+            cursor.execute('SELECT * FROM record WHERE tag = ? ORDER BY name ASC', (choice,))
 
         rows = cursor.fetchall()
         self.update_treeview(rows)
@@ -176,7 +173,7 @@ class WindowFrame(ctk.CTkFrame):
                 cursor.execute("SELECT * FROM record WHERE name Like '%" + to_search + "%' ORDER BY name ASC")
             else:
                 cursor.execute(
-                    "SELECT * FROM record WHERE tag = ? AND name Like '%" + to_search + "%' ORDER BY name ASC", tag)
+                    "SELECT * FROM record WHERE tag = ? AND name Like '%" + to_search + "%' ORDER BY name ASC", (tag,))
             rows = cursor.fetchall()
             self.update_treeview(rows)
         else:
@@ -248,7 +245,7 @@ class WindowFrame(ctk.CTkFrame):
                 # The phonenumber has changed
                 if row_phonenumber != new_phonenumber:
                     # check if the new number exists in the database
-                    cursor.execute('SELECT COUNT(*) FROM record WHERE phonenumber = ?', new_phonenumber)
+                    cursor.execute('SELECT COUNT(*) FROM record WHERE phonenumber = ?', (new_phonenumber,))
                     count = cursor.fetchone()[0]
 
                     # if the number do exist, no updates will be done
@@ -261,7 +258,7 @@ class WindowFrame(ctk.CTkFrame):
                                          icon='question', option_1="No", option_2="Yes", sound=True)
                 if response.get() == 'Yes':
                     query = ("UPDATE record SET name = ?, phonenumber = ?, email = ?, tag = ? "
-                             "WHERE name = ? AND phonenumber = ? AND email = ? AND tag = ?")
+                             "WHERE name = ? AND phonenumber = ? AND (email = ? or email IS NULL) AND tag = ?")
                     data = (
                         new_name, new_phonenumber, new_email, new_tag, row_name, row_phonenumber, row_email,
                         row_tag)
@@ -405,11 +402,10 @@ class TopLevelWindow(ctk.CTkToplevel):
                 else:
                     return
             else:
-                data = (name, phonenumber, '', tag)
+                data = (name, phonenumber, None, tag)
 
             # Check first if the data already exist in the database
-            query = 'SELECT * FROM record WHERE phonenumber = ?'
-            cursor.execute(query, phonenumber)
+            cursor.execute('SELECT * FROM record WHERE phonenumber = ?', (phonenumber,))
             existing_contact = cursor.fetchone()
 
             if existing_contact is None:
