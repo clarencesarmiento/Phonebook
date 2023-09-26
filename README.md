@@ -1,5 +1,5 @@
 # Phonebook ☎️
-![interface](https://github.com/clarencesarmiento/Phonebook/blob/61b9b2e8e2645fd8c87627419c58ff240628daf3/Images%20V2/V2%20Interface.png)
+![interface](https://github.com/clarencesarmiento/Phonebook/blob/b554be0dfc04a66fe53d2d765fdc6ad545d715f0/Images/V2%20Interface.png)
 ## [.exe](https://www.mediafire.com/file/rnngwtvt37enkun/Phonebook_V1.1_%2528.exe%2529.rar/file)
 ## DESCRIPTION:
 A python program with Graphic User Interface that lets the user to
