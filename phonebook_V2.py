@@ -195,7 +195,11 @@ class WindowFrame(ctk.CTkFrame):
             self.db_view.tag_configure('Classmate', background='#F5FCCD')
             self.db_view.tag_configure('Workmate', background='#8DDFCB')
             counter += 1
-        self.contact_count.configure(text=f'You have {counter} contact/s in the phonebook')
+
+        if counter > 1:
+            self.contact_count.configure(text=f'You have {counter} contacts in the phonebook')
+        else:
+            self.contact_count.configure(text=f'You have {counter} contact in the phonebook')
 
     # Create Function to get all the row data
     def get_row(self):
