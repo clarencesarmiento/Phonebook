@@ -31,7 +31,7 @@ git clone https://github.com/clarencesarmiento/Phonebook.git
 ### Installation
 After downloading, go to `cmd` and navigate to the folder directory.
 ```
-cd Phonebook
+cd \folder_directory\Phonebook
 ```
 Use [pip](https://pip.pypa.io/en/stable/) to install needed libraries inside
 the `requirements.txt`.
