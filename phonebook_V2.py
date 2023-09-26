@@ -238,7 +238,6 @@ class WindowFrame(ctk.CTkFrame):
             return
 
     def save_edit(self):
-        print(self.data)
         row_name, row_phonenumber, row_email, row_tag = self.data[0]
         if self.toplevel_window.name_has_input() and self.toplevel_window.phone_has_input_and_valid():
             new_name, new_phonenumber, new_email, new_tag = self.toplevel_window.get_data()
