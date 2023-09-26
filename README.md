@@ -1,21 +1,21 @@
 # Phonebook ☎️
-![interface](https://github.com/clarencesarmiento/Phonebook/blob/b89d674ce545ad5da284b94173f87d9b476d1750/Images/Interface.png)
+![interface](https://github.com/clarencesarmiento/Phonebook/blob/61b9b2e8e2645fd8c87627419c58ff240628daf3/Images%20V2/V2%20Interface.png)
 ## [.exe](https://www.mediafire.com/file/rnngwtvt37enkun/Phonebook_V1.1_%2528.exe%2529.rar/file)
 ## DESCRIPTION:
 A python program with Graphic User Interface that lets the user to
 - Add Contact
-- Update Contact
+- Edit Contact
 - Delete Contact
 - Search Contact
 ### How the Program Works?
 To create the modern graphic user interface look, the program utilizes a library `customtkinter`[^1]. For the data table, the program utilizes `ttk.treeview`[^2].
-For data storage and manipulation, the program utilizes `pyodbc`[^3] that connects the program to the program database which is a Microsoft Access Database.
+For data storage and manipulation, the program utilizes `sqlite3`[^3] that connects the program to the program database which is a SQLite Database.
 
 Add Contact
 - Adds the contact details to the database.
 
-Update Contact
-- Updates contact.
+Edit Contact
+- Edit contact.
 
 Delete Contact
 - Deletes contact record.
@@ -39,19 +39,12 @@ the `requirements.txt`.
 ```
 pip install -r requirements.txt
 ```
-The Program needs a `Microsoft Access Driver (*.mdb, *.accdb)`. To check, run the following command in python.
-```
-import pyodbc
-pyodbc.drivers()
-```
-If the Driver is not present, you have to download `Microsoft Access Database Engine`. 
-Download the appropriate version (32-bit or 64-bit) from the Microsoft Website and install it.
 ### Usage
-Run the `main.py` using [python](https://www.python.org/).
+Run the `phonebook.py` using [python](https://www.python.org/).
 ```
-python phonebook_V#.py
+python phonebook.py
 ```
 ## REFERENCES:
 [^1]: [Customtkinter](https://github.com/tomschimansky/customtkinter)
 [^2]: [ttk.Treeview](http://tkdocs.com/shipman/ttk-Treeview.html)
-[^3]: [pyodbc](https://pypi.org/project/pyodbc/)
+[^3]: [sqlite3](https://docs.python.org/3/library/sqlite3.html)
