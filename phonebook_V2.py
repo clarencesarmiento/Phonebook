@@ -27,7 +27,7 @@ class Window(ctk.CTk):
         super().__init__(*args, **kwargs)
         # self.geometry(f'{appWidth}x{appHeight}')
         self.minsize(appWidth, appHeight)
-        self.title('Phonebook')
+        self.title('Phonebook Version 2.0')
         self.iconbitmap('assets/telephone-directory.ico')
 
         # Configure Window Column
