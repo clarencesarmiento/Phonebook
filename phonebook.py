@@ -125,6 +125,7 @@ class WindowFrame(ctk.CTkFrame):
 
     # Create Delete Button Callback
     def delete(self):
+        # Disable the function if the top level window exists
         if self.toplevel_window is None or not self.toplevel_window.winfo_exists():
             if self.get_row():
                 name, phonenumber, email, tag = self.get_row()
@@ -286,10 +287,11 @@ class TopLevelWindow(ctk.CTkToplevel):
         self.columnconfigure(0, weight=1)
         self.columnconfigure(1, weight=1)
 
-        # Define Top Level Window Icons
-        self.name_icon = ctk.CTkImage(Image.open('assets/profile.png'), size=(24, 24))
-        self.phone_icon = ctk.CTkImage(Image.open('assets/phone.png'), size=(24, 24))
-        self.email_icon = ctk.CTkImage(Image.open('assets/email.png'), size=(24, 24))
+        # Load and Define Top Level Window Icons
+        image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'assets')
+        self.name_icon = ctk.CTkImage(Image.open(os.path.join(image_path, 'profile.png')), size=(24, 24))
+        self.phone_icon = ctk.CTkImage(Image.open(os.path.join(image_path, 'phone.png')), size=(24, 24))
+        self.email_icon = ctk.CTkImage(Image.open(os.path.join(image_path, 'email.png')), size=(24, 24))
 
         # Create Top Level Window Labels
         self.top_level_label = ctk.CTkLabel(self, text='New Contact', text_color='#068FFF',
