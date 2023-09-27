@@ -59,9 +59,9 @@ class WindowFrame(ctk.CTkFrame):
         # Configure Window Frame Row
         self.rowconfigure(1, weight=1)
 
-        # Add Window Label
-        self.window_label = ctk.CTkLabel(self, text='Phonebook', text_color='#068FFF', font=('helvetica', 30, 'bold'))
-        self.window_label.grid(row=0, column=0, padx=10, pady=10, sticky='w')
+        # Add Window Frame Label
+        self.windowframe_label = ctk.CTkLabel(self, text='Phonebook', text_color='#068FFF', font=('helvetica', 30, 'bold'))
+        self.windowframe_label.grid(row=0, column=0, padx=10, pady=10, sticky='w')
 
         # Create Search Entry Widget
         self.search_entry = ctk.CTkEntry(self, textvariable=self.to_search, width=300)
