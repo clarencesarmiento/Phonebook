@@ -8,7 +8,7 @@ import re
 import os
 
 ctk.set_appearance_mode('light')
-ctk.set_default_color_theme('dark-blue')
+ctk.set_default_color_theme('blue')
 
 appWidth, appHeight = 850, 450
 
@@ -359,12 +359,19 @@ class TopLevelWindow(ctk.CTkToplevel):
         phone_number_format = r"^(0?9[0-9]{9})$"
         phonenumber = self.phonenumber_entry.get()
         if len(phonenumber) != 0:
-            if re.search(phone_number_format, phonenumber):
-                self.error_phonenumber_label.configure(text='')
-                return True
+            if phonenumber.isdigit():
+                if re.search(phone_number_format, phonenumber):
+                    self.error_phonenumber_label.configure(text='')
+                    return True
+                else:
+                    if phonenumber.startswith('0'):
+                        self.error_phonenumber_label.configure(text=f'{11 - len(phonenumber)} digit more')
+                    else:
+                        self.error_phonenumber_label.configure(text=f'{10 - len(phonenumber)} digit more')
+                    return False
             else:
-                self.error_phonenumber_label.configure(text='Invalid Number')
-                return False
+                self.phonenumber_entry.delete(0, 'end')
+                self.error_phonenumber_label.configure(text='Number Only')
         else:
             self.error_phonenumber_label.configure(text='Required')
             return False
