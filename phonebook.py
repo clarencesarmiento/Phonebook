@@ -10,7 +10,7 @@ import os
 ctk.set_appearance_mode('light')
 ctk.set_default_color_theme('blue')
 
-appWidth, appHeight = 850, 450
+appWidth, appHeight = 1000, 450
 
 # Define database path
 current_directory = os.getcwd()
@@ -94,13 +94,19 @@ class WindowFrame(ctk.CTkFrame):
 
         self.db_view.grid(row=1, column=0, columnspan=3, padx=10, sticky='nsew')
 
+        # Load and Define Top Level Window Icons
+        image_path = os.path.join(os.path.dirname(os.path.realpath(__file__)), 'assets')
+        self.tag_icon = ctk.CTkImage(Image.open(os.path.join(image_path, 'tags.png')), size=(350, 60))
+        self.tag_icon_label = ctk.CTkLabel(self, text='', image=self.tag_icon)
+        self.tag_icon_label.grid(row=2, column=0, padx=10, sticky='e')
+
         # Create Contact Count
         self.contact_count = ctk.CTkLabel(self, text='')
-        self.contact_count.grid(row=2, column=0, padx=10, pady=10, sticky='w')
+        self.contact_count.grid(row=2, column=0, padx=10, sticky='w')
 
         # Create Add Button
         self.add_button = ctk.CTkButton(self, text='Add', cursor='hand2', corner_radius=50, command=self.open_toplevel)
-        self.add_button.grid(row=2, column=1, padx=10, pady=10, sticky='e')
+        self.add_button.grid(row=2, column=1, padx=10, sticky='e')
 
         # Create Delete Button
         self.delete_button = ctk.CTkButton(self, text='Delete', cursor='hand2', corner_radius=50, fg_color='#D80032',
