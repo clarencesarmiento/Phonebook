@@ -302,14 +302,14 @@ class TopLevelWindow(ctk.CTkToplevel):
                                        font=('roboto', 15, 'bold'), compound='left')
         self.name_label.grid(row=1, column=0, padx=10, pady=(10, 0), sticky='w')
 
-        self.error_name_label = ctk.CTkLabel(self, text='', text_color='#FE0000', font=('roboto', 10))
+        self.error_name_label = ctk.CTkLabel(self, text='Required', text_color='#FE0000', font=('roboto', 10))
         self.error_name_label.grid(row=1, column=1, padx=10, pady=(10, 0), sticky='e')
 
         self.phonenumber_label = ctk.CTkLabel(self, image=self.phone_icon, text=' Phone Number', text_color='#272829',
                                               font=('roboto', 15, 'bold'), compound='left')
         self.phonenumber_label.grid(row=3, column=0, padx=10, pady=(10, 0), sticky='w')
 
-        self.error_phonenumber_label = ctk.CTkLabel(self, text='', text_color='#FE0000', font=('roboto', 10))
+        self.error_phonenumber_label = ctk.CTkLabel(self, text='Required', text_color='#FE0000', font=('roboto', 10))
         self.error_phonenumber_label.grid(row=3, column=1, padx=10, pady=(10, 0), sticky='e')
 
         self.email_label = ctk.CTkLabel(self, image=self.email_icon, text=' Email', text_color='#272829',
@@ -322,6 +322,7 @@ class TopLevelWindow(ctk.CTkToplevel):
         # Create Top Level Window Entry
         self.name_entry = ctk.CTkEntry(self, placeholder_text='Ex. Juan Dela Cruz', validatecommand=self.name_has_input,
                                        validate='focus')
+        self.name_entry.bind('<KeyRelease>', self.name_has_input)
         self.name_entry.grid(row=2, column=0, columnspan=2, padx=10, sticky='ew')
 
         self.phonenumber_entry = ctk.CTkEntry(self, placeholder_text='Ex. 09XXXXXXXXX',
@@ -346,7 +347,7 @@ class TopLevelWindow(ctk.CTkToplevel):
         self.save_button.grid(row=7, column=1, padx=10, pady=10)
 
     # Create Entry Widgets Validations
-    def name_has_input(self):
+    def name_has_input(self, event=None):
         name = self.name_entry.get()
         if len(name) != 0:
             self.error_name_label.configure(text='')
@@ -364,10 +365,12 @@ class TopLevelWindow(ctk.CTkToplevel):
                     self.error_phonenumber_label.configure(text='')
                     return True
                 else:
-                    if phonenumber.startswith('0'):
+                    if phonenumber.startswith('0') and len(phonenumber) <= 11:
                         self.error_phonenumber_label.configure(text=f'{11 - len(phonenumber)} digit more')
-                    else:
+                    elif phonenumber.startswith('9') and len(phonenumber) <= 10:
                         self.error_phonenumber_label.configure(text=f'{10 - len(phonenumber)} digit more')
+                    else:
+                        self.error_phonenumber_label.configure(text='Invalid number of digits.')
                     return False
             else:
                 self.phonenumber_entry.delete(0, 'end')
