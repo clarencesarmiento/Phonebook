@@ -229,6 +229,8 @@ class WindowFrame(ctk.CTkFrame):
                 self.toplevel_window.attributes('-topmost', 'true')
                 self.toplevel_window.title('Edit')
                 self.toplevel_window.top_level_label.configure(text='Edit Contact')
+                self.toplevel_window.error_name_label.configure(text='')
+                self.toplevel_window.error_phonenumber_label.configure(text='')
                 self.toplevel_window.name_entry.insert(0, name)
                 self.toplevel_window.phonenumber_entry.insert(0, phonenumber)
                 self.toplevel_window.email_entry.insert(0, email)
