@@ -6,7 +6,7 @@ A python program with Graphic User Interface that lets the user to
 - Add Contact
 - Edit Contact
 - Delete Contact
-- Search Contact
+- Search Contact by Name
 
 ### How the Program Works?
 Before saving a contact, the details goes through a validity check, where it checks if the phone number and the email address given by the user if valid and follows the required format of the program. It also checks if the phone number to be added is existing in the database. Once done, the details are stored to an SQLite database. The same flow for updating the contact details. 
