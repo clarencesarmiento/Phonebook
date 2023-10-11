@@ -3,6 +3,8 @@
 
 ## [Video Demo](https://youtu.be/rF7C11wcsC0)
 
+## [.exe](https://www.mediafire.com/file/g1bkc0tk256ztod/Phonebook_V2.0.zip/file)
+
 ## DESCRIPTION:
 A python program with Graphic User Interface that lets the user to
 - Add Contact
