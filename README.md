@@ -1,4 +1,7 @@
 # Phonebook ☎️
+[![MIT License](https://img.shields.io/badge/License-MIT-green.svg)](https://github.com/clarencesarmiento/Youtube-Downloader/blob/638e7266043379c67f927dbfcdccc1972c17c990/LICENSE.md)
+[![Moodboard](https://img.shields.io/badge/Behance-Moodboard-blue.svg)](https://www.behance.net/gallery/181131141/Window-Desktop-Phonebook-Application)
+
 ![interface](https://github.com/clarencesarmiento/Phonebook/blob/b554be0dfc04a66fe53d2d765fdc6ad545d715f0/Images/V2%20Interface.png)
 
 ## [Video Demo](https://youtu.be/rF7C11wcsC0)
